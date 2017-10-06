@@ -61,15 +61,24 @@ LinkedList<Term>* addelement(string s){
 	int degree = list->getHead()->data.exponent;
 	Node<Term>* monomial = list->getHead();
 	for (int i = 0; i < degree + 1; i++){
-		int current_expo = monomial->data.exponent;
-		if (current_expo != (degree - i)){
+		if (monomial == NULL){
 			Term temp_monomial;
 			temp_monomial.coefficient = 0;
 			temp_monomial.exponent = degree - i;
 			list->InsertItem(temp_monomial, i);
 		}
-		else
-			monomial = monomial->next;
+		else{
+			int current_expo = monomial->data.exponent;
+			if (current_expo != (degree - i)){
+				Term temp_monomial;
+				temp_monomial.coefficient = 0;
+				temp_monomial.exponent = degree - i;
+				list->InsertItem(temp_monomial, i);
+			}
+			else
+				monomial = monomial->next;
+		}
+		
 	}
 
 	PrintList(list);
@@ -82,7 +91,7 @@ int main(){
 	//cout << "Enter polynamial: ";
 	//cin >> s;
 
-	s = "5.2x^4-3x-4.213123213";
+	s = "5.2x^4-3x";
 	cout << s << endl << endl;
 	list = addelement(s);
 	
