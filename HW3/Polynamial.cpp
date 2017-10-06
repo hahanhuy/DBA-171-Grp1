@@ -9,6 +9,7 @@ struct Term
 {
 	double coefficient;
 	int exponent;
+	
 };
 
 class Polynomial {
@@ -17,8 +18,15 @@ private:
 
 };
 
-void addelement(string s){
-	//LinkedList<Term> list;
+void PrintList(LinkedList<Term> list){
+	while (list.getHead() != NULL){
+		Term data = list.getHead()->
+	}
+}
+
+LinkedList<Term> addelement(string s){
+	LinkedList<Term> list;
+
 	int i = 0;
 	char tmp[20];
 	while (s[i] != '\0') {
@@ -30,23 +38,25 @@ void addelement(string s){
 		tmp[j - i] = '\0';
 
 		istringstream iss(tmp);
-		double coefficient;
-		int exponent;
+		Term value;
 		char x;
-		iss >> coefficient;
+		
+		iss >> value.coefficient;
 		if (iss.eof())
-			exponent = 0;
+			value.exponent = 0;
 		else{
 			iss >> x >> x;
 			if (iss.eof())
-				exponent = 1;
+				value.exponent = 1;
 			else
-				iss >> exponent;
+				iss >> value.exponent;
 		}
-		cout << coefficient << " " << exponent << endl;
+		list.InsertFirst(value);
+		cout << value.coefficient << " " << value.exponent << endl;
 		i = j;
 	}
 
+	return list;
 }
 
 int main(){
