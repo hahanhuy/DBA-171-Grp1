@@ -27,9 +27,9 @@ public:
 	int				InsertNode(Node<List_ItemType>* pPre, List_ItemType value);
 	List_ItemType	DeleteNode(Node<List_ItemType>* pPre, Node<List_ItemType>* pLoc);
 	int				Search(List_ItemType value, Node<List_ItemType>* &pPre, Node<List_ItemType>* &pLoc);
-	Node<InsertItem>*	getHead();
+	Node<List_ItemType>*	getHead();
 	int					getCount();
-	void				setHead(Node<InsertItem>* newHead);
+	void				setHead(Node<List_ItemType>* newHead);
 	void				setCount(int newCount);
 
 private:

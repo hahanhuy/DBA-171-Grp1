@@ -157,7 +157,7 @@ int	LinkedList<List_ItemType>::Search(
 
 //getHead
 template <class List_ItemType>
-Node<InsertItem>* LinkedList<List_ItemType>::getHead(){
+Node<List_ItemType>* LinkedList<List_ItemType>::getHead(){
 	return head;
 }
 
@@ -167,7 +167,7 @@ int LinkedList<List_ItemType>::getCount(){
 }
 
 template<class List_ItemType>
-void LinkedList<List_ItemType>::setHead(Node<InsertItem>* newHead){
+void LinkedList<List_ItemType>::setHead(Node<List_ItemType>* newHead){
 	this->head = newHead;
 }
 
