@@ -23,10 +23,14 @@ public:
 	int				InsertItem(List_ItemType value, int position);
 	void			Clear();
 
-protected:
+//protected:
 	int				InsertNode(Node<List_ItemType>* pPre, List_ItemType value);
 	List_ItemType	DeleteNode(Node<List_ItemType>* pPre, Node<List_ItemType>* pLoc);
 	int				Search(List_ItemType value, Node<List_ItemType>* &pPre, Node<List_ItemType>* &pLoc);
+	Node<InsertItem>*	getHead();
+	int					getCount();
+	void				setHead(Node<InsertItem>* newHead);
+	void				setCount(int newCount);
 
 private:
 	Node<List_ItemType> *head;

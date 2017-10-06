@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "LinkedList.h"
 
 
@@ -156,3 +155,23 @@ int	LinkedList<List_ItemType>::Search(
 	return (pLoc != NULL);
 }
 
+//getHead
+template <class List_ItemType>
+Node<InsertItem>* LinkedList<List_ItemType>::getHead(){
+	return head;
+}
+
+template <class List_ItemType>
+int LinkedList<List_ItemType>::getCount(){
+	return count;
+}
+
+template<class List_ItemType>
+void LinkedList<List_ItemType>::setHead(Node<InsertItem>* newHead){
+	this->head = newHead;
+}
+
+template<class List_ItemType>
+void LinkedList<List_ItemType>::setCount(int newCount){
+	this->count = newCount;
+}
