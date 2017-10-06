@@ -122,6 +122,43 @@ Polynomial* Polynomial::add(Polynomial* P){
 	return result;
 }
 
+Polynomial* Polynomial::sub(Polynomial* P){
+	Polynomial* result = new Polynomial();
+	int thisdegree = this->list->getHead()->data.exponent;
+	int thatdegree = P->list->getHead()->data.exponent;
+	int length = ((thisdegree > thatdegree) ? thisdegree : thatdegree) + 1;
+	Node<Term> *node1, *node2;
+	node1 = this->list->getHead();
+	node2 = P->list->getHead();
+
+	for (int i = 0; i < length; i++){
+		Term temp;
+		int expo1 = node1->data.exponent;
+		int expo2 = node2->data.exponent;
+
+		if (expo1 > expo2){
+			temp.coefficient = node1->data.coefficient;
+			temp.exponent = node1->data.exponent;
+			node1 = node1->next;
+		}
+		else{
+			if (expo2 > expo1){
+				temp.coefficient = -node2->data.coefficient;
+				temp.exponent = node2->data.exponent;
+				node2 = node2->next;
+			}
+			else{
+				temp.coefficient = node1->data.coefficient - node2->data.coefficient;
+				temp.exponent = node1->data.exponent;
+				node1 = node1->next;
+				node2 = node2->next;
+			}
+		}
+		result->list->InsertLast(temp);
+	}
+	return result;
+}
+
 ///////////////----------------//////////////////////////
 int main(){
 	string s;
@@ -135,13 +172,19 @@ int main(){
 	
 
 	s = "5.2x^4-3x";
-	cout << s << endl << endl;
+	cout << "poly1: " << s << endl << endl;
 	P1->create(s);
 	//P1->print();
 	s = "5.2x^7-3x-6969";
+	cout << "poly2: " << s << endl << endl;
 	P2->create(s);
 	//P2->print();
 	result = P1->add(P2);
+	result->print();
+
+	cout << "SUB:\n";
+
+	result = P1->sub(P2);
 	result->print();
 
 	system("pause");
