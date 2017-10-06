@@ -18,15 +18,17 @@ private:
 
 };
 
-void PrintList(LinkedList<Term> list){
-	while (list.getHead() != NULL){
-		Term data = list.getHead()->
-	}
-}
+//void PrintList(LinkedList<Term> list){
+//	Node<Term> * temp = list.getHead();
+//	while (temp != NULL){
+//		cout << temp->data.coefficient << " " << temp->data.exponent << endl;
+//		temp = temp->next;
+//	}
+//}
 
-LinkedList<Term> addelement(string s){
-	LinkedList<Term> list;
-
+void addelement(string s){
+//	LinkedList<Term> list;
+	
 	int i = 0;
 	char tmp[20];
 	while (s[i] != '\0') {
@@ -51,23 +53,23 @@ LinkedList<Term> addelement(string s){
 			else
 				iss >> value.exponent;
 		}
-		list.InsertFirst(value);
+		//list.InsertFirst(value);
 		cout << value.coefficient << " " << value.exponent << endl;
 		i = j;
+		
 	}
-
-	return list;
+	//PrintList(list);
 }
 
 int main(){
 	string s;
-	
+	LinkedList<Term> list;
 	//cout << "Enter polynamial: ";
 	//cin >> s;
 
 	s = "5.2x^2-3x-4.213123213";
 	addelement(s);
-
+	
 
 	system("pause");
     return 0;
