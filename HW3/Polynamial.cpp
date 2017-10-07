@@ -1,15 +1,13 @@
-// Polynamial.cpp : Defines the entry point for the console application.
-//
-
-
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <vector>
+#include <math.h>
 #include "LinkedList.h"
 
 using namespace std;
 
+//A structure to store coefficient and exponent of a monomial
 struct Term
 {
 	double coefficient;
@@ -43,16 +41,19 @@ public:
 	Polynomial* sub(Polynomial* P);
 	Polynomial* mul(Polynomial* P);
 	LinkedList<Term>* getValue();
+	double cal(double x);
 };
 
 LinkedList<Term>* Polynomial::getValue() {
 	return this->list;
 }
 
+//create a linked list storing coefficients and exponents of polynomial
 void Polynomial::create(string s) {
 	int i = 0;
 	char tmp[50];
-
+	
+	//get a monomial in a string form 
 	while (s[i] != '\0') {
 		int j = i;
 		do {
@@ -62,17 +63,20 @@ void Polynomial::create(string s) {
 
 		tmp[j - i] = '\0';
 
+		//insert the coefficient and the exponent of the monomial has been got above into Linked list 
 		istringstream iss(tmp);
 		Term value;
 		char x;
+		//case: monomial has "+x" in the front
 		if (tmp[0] == '+' && tmp[1] == 'x'){
 			value.coefficient = 1;
-			iss >> x >> x >> x;
+			iss >> x >> x >> x; //skip three characters '+', 'x' and '^'
 			if (iss.eof())
-				value.exponent = 1;
+				value.exponent = 1; //after skip three characters above, the stringstream is empty. It means the exponent is 1. Example: 3x
 			else
-				iss >> value.exponent;
+				iss >> value.exponent;//if it is still not empty, the number after three characters have been skiped is the monomial's exponent 
 		}
+		//case: monomial has "x" in the front
 		else{
 			if (tmp[0] == 'x'){
 				value.coefficient = 1;
@@ -82,9 +86,10 @@ void Polynomial::create(string s) {
 				else
 					iss >> value.exponent;
 			}
+			//case: a complete mononial. ex: 5.2x^3
 			else{
 				iss >> value.coefficient;
-				if (iss.eof())
+				if (iss.eof()) //it means the degree of this monomial is zero
 					value.exponent = 0;
 				else {
 					iss >> x >> x;
@@ -95,13 +100,12 @@ void Polynomial::create(string s) {
 				}
 			}
 		}
-		
-		//cout << value.coefficient << " " << value.exponent << endl<< endl;
 		iss.clear();
 		list->InsertLast(value);
 		i = j;
 	}
 
+	//insert the monomial without coefficient into list
 	int degree = list->getHead()->data.exponent;
 	Node<Term>* monomial = list->getHead();
 	for (int i = 0; i < degree + 1; i++) {
@@ -122,10 +126,10 @@ void Polynomial::create(string s) {
 			else
 				monomial = monomial->next;
 		}
-
 	}
 }
 
+//print a polynomial
 void Polynomial::print() {
 	Node<Term> * temp = list->getHead();
 	while (true) {
@@ -140,9 +144,12 @@ void Polynomial::print() {
 			temp = temp->next;
 			continue;
 		}
-
 		if (temp->next == NULL){
-			if (coefficient > 0)
+			if (coefficient == 0){
+				cout << endl;
+				break;
+			}				
+			else if (coefficient > 0)
 				cout << "+"; 
 			cout << coefficient << endl;
 			break;
@@ -169,10 +176,12 @@ Polynomial* Polynomial::add(Polynomial* P) {
 	int thisdegree = this->list->getHead()->data.exponent;
 	int thatdegree = P->list->getHead()->data.exponent;
 	int length = ((thisdegree > thatdegree) ? thisdegree : thatdegree) + 1;
+	//create two pointers point at head of list of 'this' polynomial and polynomial 'P', respectively 
 	Node<Term> *node1, *node2;
 	node1 = this->list->getHead();
 	node2 = P->list->getHead();
 
+	//two pointers transverse the list
 	for (int i = 0; i < length; i++) {
 		Term temp;
 		int expo1 = node1->data.exponent;
@@ -297,6 +306,18 @@ Polynomial* Polynomial::mul(Polynomial* P) {
 	return res;
 }
 
+double Polynomial::cal(double x){
+	double result = 0;
+	Node<Term> *temp = this->list->getHead();
+	while (temp != NULL){
+		int expo = temp->data.exponent;
+		double coef = temp->data.coefficient;
+		result += pow(x, expo)*coef;
+		temp = temp->next;
+	}
+	return result;
+}
+
 int main() {
 	const int NUM_POLY = 20;
 	string s;
@@ -370,6 +391,7 @@ int main() {
 			iss.clear();
 
 			// cal here
+			cout << polyList[leftIdx - 1]->cal(xValue) << endl;
 		}
 		// code for other operations
 		else {
@@ -383,9 +405,15 @@ int main() {
 			}
 			if (expr[1] == "add") {
 				// add here
+				Polynomial *res = new Polynomial();
+				res = polyList[leftIdx - 1]->add(polyList[rightIdx - 1]);
+				res->print();
 			}
 			else if (expr[1] == "sub") {
 				// sub here
+				Polynomial *res = new Polynomial();
+				res = polyList[leftIdx - 1]->sub(polyList[rightIdx - 1]);
+				res->print();
 			}
 			else if (expr[1] == "mul") {
 				Polynomial *res = new Polynomial();
