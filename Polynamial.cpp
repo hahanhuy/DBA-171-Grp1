@@ -1,7 +1,7 @@
 // Polynamial.cpp : Defines the entry point for the console application.
 //
 
-#include "stdafx.h"
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -65,17 +65,38 @@ void Polynomial::create(string s) {
 		istringstream iss(tmp);
 		Term value;
 		char x;
-
-		iss >> value.coefficient;
-		if (iss.eof())
-			value.exponent = 0;
-		else {
-			iss >> x >> x;
+		if (tmp[0] == '+' && tmp[1] == 'x'){
+			value.coefficient = 1;
+			iss >> x >> x >> x;
 			if (iss.eof())
 				value.exponent = 1;
 			else
 				iss >> value.exponent;
 		}
+		else{
+			if (tmp[0] == 'x'){
+				value.coefficient = 1;
+				iss >> x >> x;
+				if (iss.eof())
+					value.exponent = 1;
+				else
+					iss >> value.exponent;
+			}
+			else{
+				iss >> value.coefficient;
+				if (iss.eof())
+					value.exponent = 0;
+				else {
+					iss >> x >> x;
+					if (iss.eof())
+						value.exponent = 1;
+					else
+						iss >> value.exponent;
+				}
+			}
+		}
+		
+		//cout << value.coefficient << " " << value.exponent << endl<< endl;
 		iss.clear();
 		list->InsertLast(value);
 		i = j;
@@ -107,8 +128,38 @@ void Polynomial::create(string s) {
 
 void Polynomial::print() {
 	Node<Term> * temp = list->getHead();
-	while (temp != NULL) {
-		cout << temp->data.coefficient << " " << temp->data.exponent << endl;
+	while (true) {
+		double coefficient = temp->data.coefficient;
+		int exponent = temp->data.exponent;
+
+		if (temp == list->getHead()){
+			if (coefficient == 1)
+				cout << "x^" << exponent;
+			else
+				cout << coefficient << "x^" << exponent;
+			temp = temp->next;
+			continue;
+		}
+
+		if (temp->next == NULL){
+			if (coefficient > 0)
+				cout << "+"; 
+			cout << coefficient << endl;
+			break;
+		}
+
+		if (coefficient == 0){
+			temp = temp->next;
+			continue;
+		}
+		
+		if (coefficient > 0)
+			cout << "+";
+		
+		if (coefficient == 1)
+			cout << "x^" << exponent;
+		else
+			cout << coefficient << "x^" << exponent;		
 		temp = temp->next;
 	}
 }
@@ -357,17 +408,22 @@ int main() {
 		} while (option != "y" && option != "n");
 	} while (option != "n");
 
-	//string s = "5x^2+3x+4";
+	//string s2 = "x^3+x^2+4";
 	//Polynomial *p1 = new Polynomial();
-	//p1->create(s);
+	//p1->create(s2);
 	////p1->print();
-	//s = "3x^4+3x^2+7";
+	////cout << endl;
+	//s2 = "x^4+x^2+7";
 	//Polynomial *p2 = new Polynomial();
-	//p2->create(s);
-
+	//p2->create(s2);
+	////p2->print();
+	////cout << endl;
 	//Polynomial *res = new Polynomial();
 	//res = p1->mul(p2);
 	//res->print();
+	//cout << "P1: ";
+	//p1->print();
+
 
 	system("pause");
 	return 0;
