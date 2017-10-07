@@ -1,7 +1,7 @@
 // Polynamial.cpp : Defines the entry point for the console application.
 //
 
-#include "stdafx.h"
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -17,6 +17,18 @@ struct Term
 
 };
 
+Node<double>* ConvertToLinkedList(double arr[], int size) {
+	Node<double> *head, *pCur, *pPre;
+	head = new Node<double>{ arr[0], NULL };
+	pPre = head;
+	for (int i = 1; i < size; i++) {
+		pCur = new Node<double>{ arr[i], NULL };
+		pPre->next = pCur;
+		pPre = pCur;
+	}
+	return head;
+}
+
 class Polynomial {
 private:
 	LinkedList<Term> *list;
@@ -29,7 +41,13 @@ public:
 	void print();
 	Polynomial* add(Polynomial* P);
 	Polynomial* sub(Polynomial* P);
+	Polynomial* mul(Polynomial* P);
+	LinkedList<Term>* getValue();
 };
+
+LinkedList<Term>* Polynomial::getValue() {
+	return this->list;
+}
 
 void Polynomial::create(string s) {
 	int i = 0;
@@ -47,17 +65,39 @@ void Polynomial::create(string s) {
 		istringstream iss(tmp);
 		Term value;
 		char x;
-
-		iss >> value.coefficient;
-		if (iss.eof())
-			value.exponent = 0;
-		else {
-			iss >> x >> x;
+		if (tmp[0] == '+' && tmp[1] == 'x'){
+			value.coefficient = 1;
+			iss >> x >> x >> x;
 			if (iss.eof())
 				value.exponent = 1;
 			else
 				iss >> value.exponent;
 		}
+		else{
+			if (tmp[0] == 'x'){
+				value.coefficient = 1;
+				iss >> x >> x;
+				if (iss.eof())
+					value.exponent = 1;
+				else
+					iss >> value.exponent;
+			}
+			else{
+				iss >> value.coefficient;
+				if (iss.eof())
+					value.exponent = 0;
+				else {
+					iss >> x >> x;
+					if (iss.eof())
+						value.exponent = 1;
+					else
+						iss >> value.exponent;
+				}
+			}
+		}
+		
+		//cout << value.coefficient << " " << value.exponent << endl<< endl;
+		iss.clear();
 		list->InsertLast(value);
 		i = j;
 	}
@@ -88,8 +128,38 @@ void Polynomial::create(string s) {
 
 void Polynomial::print() {
 	Node<Term> * temp = list->getHead();
-	while (temp != NULL) {
-		cout << temp->data.coefficient << " " << temp->data.exponent << endl;
+	while (true) {
+		double coefficient = temp->data.coefficient;
+		int exponent = temp->data.exponent;
+
+		if (temp == list->getHead()){
+			if (coefficient == 1)
+				cout << "x^" << exponent;
+			else
+				cout << coefficient << "x^" << exponent;
+			temp = temp->next;
+			continue;
+		}
+
+		if (temp->next == NULL){
+			if (coefficient > 0)
+				cout << "+"; 
+			cout << coefficient << endl;
+			break;
+		}
+
+		if (coefficient == 0){
+			temp = temp->next;
+			continue;
+		}
+		
+		if (coefficient > 0)
+			cout << "+";
+		
+		if (coefficient == 1)
+			cout << "x^" << exponent;
+		else
+			cout << coefficient << "x^" << exponent;		
 		temp = temp->next;
 	}
 }
@@ -168,11 +238,69 @@ Polynomial* Polynomial::sub(Polynomial* P) {
 	return result;
 }
 
+Polynomial* Polynomial::mul(Polynomial* P) {
+	if (this->list->getHead() == NULL || P->getValue()->getHead() == NULL) {
+		cout << "Polynomial is empty" << endl;
+		return NULL;
+	}
+
+	Polynomial *res = new Polynomial();
+	Node<Term> *firstTmp, *secondTmp;
+	//Node<Term> *cur, *pre;
+	double firstArr[100] = {};
+	double secondArr[100] = {};
+	double resultArr[100] = {};
+	int firstSize = 0;
+	int secondSize = 0;
+
+	firstTmp = this->list->getHead();
+	secondTmp = P->getValue()->getHead();
+
+	// convert 2 linked lists to 2 arrays
+	cout << "First poly: " << endl;
+	while (firstTmp) {
+		firstArr[firstSize] = firstTmp->data.coefficient;		
+		cout << firstTmp->data.coefficient << " ";
+		firstTmp = firstTmp->next;
+		firstSize++;
+	}
+	cout << endl;
+
+	cout << "Second poly: " << endl;
+	while (secondTmp) {
+		secondArr[secondSize] = secondTmp->data.coefficient;
+		cout << secondTmp->data.coefficient << " ";
+		secondTmp = secondTmp->next;
+		secondSize++;
+	}
+	cout << endl;
+
+	// write output to array
+	int resultSize = firstSize + secondSize - 1;
+	for (int i = 0; i < secondSize; i++) {
+		for (int j = 0; j < firstSize; j++) {
+			resultArr[i + j] += secondArr[i] * firstArr[j];
+		}
+	}
+
+	//cout << "Result poly: " << endl;
+	for (int i = 0; i < resultSize; i++) {
+		Term newTerm;
+		newTerm.coefficient = resultArr[i];
+		//cout << resultArr[i] << " ";
+		newTerm.exponent = resultSize - 1 - i;
+		//cout << resultSize - 1 - i << endl;
+		res->getValue()->InsertLast(newTerm);
+	}
+	cout << endl;
+
+	return res;
+}
+
 int main() {
 	const int NUM_POLY = 20;
 	string s;
 	string option;
-	int polyIdx = 0;
 	int polyListSize = 0;
 
 	Polynomial* polyList[NUM_POLY];
@@ -192,7 +320,8 @@ int main() {
 		}
 
 		newPoly->create(s);
-		polyList[polyIdx] = newPoly;
+		polyList[polyListSize] = newPoly;
+		polyList[polyListSize]->print();
 		polyListSize++;
 
 		do {
@@ -225,7 +354,7 @@ int main() {
 		iss.str(expr[0]);
 		iss >> c >> leftIdx;
 		iss.clear();
-		if (leftIdx < 0 || leftIdx >= polyListSize) {
+		if (leftIdx - 1 < 0 || leftIdx - 1 >= polyListSize) {
 			cout << "Index is out of bound" << endl;
 			continue;
 		}
@@ -248,7 +377,7 @@ int main() {
 			iss.str(expr[2]);
 			iss >> c >> rightIdx;
 			iss.clear();
-			if (rightIdx < 0 || rightIdx >= polyListSize) {
+			if (rightIdx - 1 < 0 || rightIdx - 1 >= polyListSize) {
 				cout << "Index is out of bound" << endl;
 				continue;
 			}
@@ -259,7 +388,10 @@ int main() {
 				// sub here
 			}
 			else if (expr[1] == "mul") {
-				// mul here
+				Polynomial *res = new Polynomial();
+				cout << leftIdx - 1 << " " << expr[1] << " " << rightIdx - 1 << endl;
+				res = polyList[leftIdx - 1]->mul(polyList[rightIdx - 1]);
+				res->print();
 			}
 			else if (expr[1] == "div") {
 				// div here
@@ -269,14 +401,28 @@ int main() {
 				continue;
 			}
 		}
-		
-		cout << leftIdx << " " << expr[1] << " " << rightIdx << " " << xValue << endl;
 
 		do {
 			cout << "Do you want to continue (y/n): ";
 			getline(cin, option);
 		} while (option != "y" && option != "n");
 	} while (option != "n");
+
+	//string s2 = "x^3+x^2+4";
+	//Polynomial *p1 = new Polynomial();
+	//p1->create(s2);
+	////p1->print();
+	////cout << endl;
+	//s2 = "x^4+x^2+7";
+	//Polynomial *p2 = new Polynomial();
+	//p2->create(s2);
+	////p2->print();
+	////cout << endl;
+	//Polynomial *res = new Polynomial();
+	//res = p1->mul(p2);
+	//res->print();
+	//cout << "P1: ";
+	//p1->print();
 
 
 	system("pause");
